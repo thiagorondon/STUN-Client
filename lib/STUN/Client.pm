@@ -3,6 +3,7 @@
 package STUN::Client;
 
 use Moose;
+use Moose::Util::TypeConstraints;
 
 use Socket;
 use String::Random qw(random_regex);
@@ -61,8 +62,8 @@ has 'retries' => (
 
 has 'timeout' => (
     is => 'rw',
-    isa => 'Float',
-    default => 2.0
+    isa => 'Int',
+    default => 2
 );
 
 sub _select {
@@ -132,6 +133,7 @@ sub run () {
             r_ma_port => $r_ma_port,
             r_ma_address => $r_ma_address
         };
+        #$self->stun_return($ret);
         return $ret;
     }
 }
