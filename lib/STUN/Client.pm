@@ -32,21 +32,6 @@ has proto => (
     default => 'udp',
 );
 
-has 'sock' => (
-    is => 'ro',
-    isa => 'Object',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        IO::Socket::INET->new(
-            PeerAddr => $self->stun_server,
-            PeerPort => $self->port,
-            PeerProto => $self->proto,
-            ReuseAddr => 1
-        )
-    }
-);
-
 has 'transaction_id' => (
     is => 'ro',
     isa => 'Str',
@@ -140,3 +125,47 @@ sub run () {
 
 
 1;
+
+__END__
+
+=head1 NAME
+
+STUN::Client - STUN Client. (RFC 5389 )
+
+=head1 SYNOPSIS
+
+    use STUN::Client;
+    use Data::Dumper;
+
+    $stun_client = STUN::Client->new;
+
+    $stun_client->stun_server('stun.server.org');
+    $r = $stun_client->run;
+
+    print Dumper($r);
+
+=head1 DESCRIPTION
+
+Session Traversal Utilities for NAT (STUN) is a protocol that serves as a tool for other protocols in dealing with Network Address Translator (NAT) traversal. It can be used by an endpoint to determine the IP address and port allocated to it by a NAT. It can also be used to check connectivity between two endpoints, and as a keep-alive protocol to maintain NAT bindings. STUN works with many existing NATs, and does not require any special behavior from them.
+                
+STUN is not a NAT traversal solution by itself. Rather, it is a tool to be used in the context of a NAT traversal solution.
+
+=head1 ATTRIBUTES
+
+TODO
+
+=head1 METHODS
+
+TODO
+
+=head1 AUTHOR
+
+Thiago Rondon, <thiago@aware.com.br>
+
+http://www.aware.com.br/
+
+=head1 LICENSE
+
+Perl license.
+
+
