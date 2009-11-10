@@ -8,6 +8,11 @@ all_from 'lib/STUN/Client.pm';
 build_requires 'Test::More';
 build_requires 'Test::UseAllModules';
 
+requires 'Moose';
+requires 'Moose::Util::TypeConstraints';
+requires 'Socket';
+requires 'String::Random';
+
 auto_install;
 
 WriteAll;
