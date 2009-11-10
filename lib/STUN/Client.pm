@@ -8,7 +8,7 @@ use Moose::Util::TypeConstraints;
 use Socket;
 use String::Random qw(random_regex);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has stun_server => (
     is => 'rw',
@@ -51,6 +51,12 @@ has 'timeout' => (
     default => 2
 );
 
+has 'method' => (
+    is => 'rw',
+    isa => 'Str',
+    default => 0x0001
+);
+
 sub _select {
     my ($self, $rinh) = @_;
     my ($rin, $win, $ein);
@@ -80,7 +86,7 @@ sub run () {
     my $transaction_id = $self->transaction_id;
 
     my $msg = pack('nna[16]',
-                0x0001, # Binding Request
+                $self->method, # default: Binding Request
                 0, # message length excluding header
                 $transaction_id
             );
@@ -152,11 +158,23 @@ STUN is not a NAT traversal solution by itself. Rather, it is a tool to be used 
 
 =head1 ATTRIBUTES
 
-TODO
+=head2 stun_server
+
+=head2 port
+
+=head2 source_address
+
+=head2 proto
+
+=head2 retries
+
+=head2 timeout
+
+=head2 method
 
 =head1 METHODS
 
-TODO
+=head2 run
 
 =head1 AUTHOR
 
