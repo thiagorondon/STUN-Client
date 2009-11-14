@@ -21,9 +21,15 @@ has port => (
     default => 3478, 
 );
 
-has 'source_address' => (
+has 'local_address' => (
     is => 'rw',
     isa => 'Str'
+);
+
+has 'local_port' => (
+    is => 'rw',
+    isa => 'Int'
+    default => 0;
 );
 
 has proto => (
@@ -36,7 +42,7 @@ has 'transaction_id' => (
     is => 'ro',
     isa => 'Str',
     lazy => 1,
-    default => random_regex('[0-9A-F]{32}')
+    default => random_regex('[0-9A-F]{16}')
 );
 
 has 'retries' => (
@@ -73,11 +79,10 @@ sub run () {
 
     socket(S, PF_INET, SOCK_DGRAM, getprotobyname($self->proto));
 
-    if ($self->source_address) {
-        my $bind_addr = gethostbyname($self->source_address)
+    if ($self->local_address) {
+        my $bind_addr = gethostbyname($self->local_address)
             || die "$0: Couldn't bind.\n";
-    
-        my $bind_sin = sockaddr_in(0, $bind_addr);
+        my $bind_sin = sockaddr_in($self->local_port, $bind_addr);
         bind(S, $bind_sin) || die "$0: Couldn't bind $!\n";
     }
 
@@ -162,7 +167,9 @@ STUN is not a NAT traversal solution by itself. Rather, it is a tool to be used 
 
 =head2 port
 
-=head2 source_address
+=head2 local_address
+
+=head2 local_port
 
 =head2 proto
 
