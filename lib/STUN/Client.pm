@@ -156,7 +156,7 @@ __END__
 
 =head1 NAME
 
-STUN::Client - STUN Client. (RFC 5389)
+STUN::Client - Session Traversal Utilities for NAT (STUN) client. (RFC 5389)
 
 =head1 SYNOPSIS
 
@@ -180,25 +180,74 @@ STUN is not a NAT traversal solution by itself. Rather, it is a tool to be used 
 
 =head2 stun_server
 
-=head2 port
-
-=head2 local_address
-
-=head2 local_port
+Hostname of STUN server.
 
 =head2 proto
 
+Protocol to use for connect, 'udp' or 'tcp'. 
+
+Default: udp.
+
+=head2 port
+
+Port number of STUN server.
+
+Default: 3478
+
+=head2 local_address
+
+Local Internet address.
+
+=head2 local_port
+
+Local port number, but it is necessary that local_address is explicity.
+
 =head2 retries
+
+The client retries the request, this time including its username and the
+realm, and echoing the nonce provided by the server.  The client also
+includes a message-integrity, which provides an HMAC over the entire
+request, including the nonce.  The server validates the nonce and
+checks the message integrity.  If they match, the request is
+authenticated.  If the nonce is no longer valid, it is considered
+"stale", and the server rejects the request, providing a new nonce.
+
+Default: 5
 
 =head2 timeout
 
+Retransmit a STUN request message starting with an interval of RTO ("Retransmission TimeOut"), doubling after each retransmission.
+
+Default: 2
+
 =head2 method
 
+STUN methods in the range 0x000 - 0x7FF are assigned by IETF Review
+[RFC5226].  STUN methods in the range 0x800 - 0xFFF are assigned by
+Designated Expert [RFC5226].
+
 =head2 data
+
+Data to send in package.
 
 =head1 METHODS
 
 =head2 run
+
+Connect to a stun_server and receive the answer.
+
+=head1 STUN Servers
+
+    * stun.ekiga.net
+    * stun.fwdnet.net
+    * stun.ideasip.com
+    * stun01.sipphone.com (no DNS SRV record)
+    * stun.softjoys.com (no DNS SRV record)
+    * stun.voipbuster.com (no DNS SRV record)
+    * stun.voxgratia.org (no DNS SRV record)
+    * stun.xten.com
+    * stunserver.org see their usage policy
+    * stun.sipgate.net:10000 
 
 =head1 AUTHOR
 
