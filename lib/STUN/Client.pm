@@ -60,7 +60,23 @@ has 'timeout' => (
 has 'method' => (
     is => 'rw',
     isa => 'Str',
-    default => 0x0001
+    default => '0001'
+);
+
+has 'data' => (
+    is => 'rw',
+    isa => 'Str',
+    default => ''
+);
+
+has 'data_len' => (
+    is => 'ro',
+    isa => 'Str',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        sprintf("%04d", length($self->data));
+    }
 );
 
 sub _select {
@@ -88,12 +104,11 @@ sub run () {
 
     my $iaddr = gethostbyname($self->stun_server);
     my $sin = sockaddr_in($self->port, $iaddr);
-    my $transaction_id = $self->transaction_id;
 
     my $msg = pack('nna[16]',
-                '0001', # default: Binding Request
-                '0000', # message length excluding header
-                $transaction_id
+                $self->method, 
+                $self->data_len,
+                $self->transaction_id
             );
 
     my $try = 0;
@@ -127,7 +142,7 @@ sub run () {
             r_ma_dummy => $r_ma_dummy,
             r_ma_family => $r_ma_family,
             r_ma_port => $r_ma_port,
-            r_ma_address => $r_ma_address
+            r_ma_address => inet_ntoa($r_ma_address)
         };
         #$self->stun_return($ret);
         return $ret;
@@ -141,7 +156,7 @@ __END__
 
 =head1 NAME
 
-STUN::Client - STUN Client. (RFC 5389 )
+STUN::Client - STUN Client. (RFC 5389)
 
 =head1 SYNOPSIS
 
@@ -178,6 +193,8 @@ STUN is not a NAT traversal solution by itself. Rather, it is a tool to be used 
 =head2 timeout
 
 =head2 method
+
+=head2 data
 
 =head1 METHODS
 

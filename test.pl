@@ -9,8 +9,8 @@ use Data::Dumper;
 
 $stun_client = STUN::Client->new;
 
-$stun_client->stun_server('stun.ekiga.net');
-#$stun_client->local_address('192.168.1.247');
+$stun_client->stun_server('stun.xten.com');
+$stun_client->local_address('192.168.1.247');
 $r = $stun_client->run;
 
 print Dumper($r);
