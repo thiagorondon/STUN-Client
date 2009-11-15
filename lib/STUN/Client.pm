@@ -28,8 +28,8 @@ has 'local_address' => (
 
 has 'local_port' => (
     is => 'rw',
-    isa => 'Int'
-    default => 0;
+    isa => 'Int',
+    default => 0
 );
 
 has proto => (
@@ -91,8 +91,8 @@ sub run () {
     my $transaction_id = $self->transaction_id;
 
     my $msg = pack('nna[16]',
-                $self->method, # default: Binding Request
-                0, # message length excluding header
+                '0001', # default: Binding Request
+                '0000', # message length excluding header
                 $transaction_id
             );
 
@@ -116,7 +116,7 @@ sub run () {
             $r_ma_dummy, $r_ma_family,
             $r_ma_port, $r_ma_address) =
                 unpack("nna[16]" . "nn" . "bbna[4]",
-                    $msg);
+                    $rmsg);
 
         my $ret = { 
             r_message_type => $r_message_type,
