@@ -79,6 +79,11 @@ has 'data_len' => (
     }
 );
 
+has 'response' => (
+    is => 'rw',
+    isa => 'HashRef'
+);
+
 sub _select {
     my ($self, $rinh) = @_;
     my ($rin, $win, $ein);
@@ -126,25 +131,25 @@ sub run () {
 
         next if !defined $r;
 
-        my ($r_message_type, $r_message_length, $r_transaction_id,
-            $r_attr_type, $r_attr_length,
-            $r_ma_dummy, $r_ma_family,
-            $r_ma_port, $r_ma_address) =
+        my ($message_type, $message_length, $transaction_id,
+            $attr_type, $attr_length,
+            $ma_dummy, $ma_family,
+            $ma_port, $ma_address) =
                 unpack("nna[16]" . "nn" . "bbna[4]",
                     $rmsg);
 
         my $ret = { 
-            r_message_type => $r_message_type,
-            r_message_length => $r_message_length,
-            r_transaction_id => $r_transaction_id,
-            r_attr_type => $r_attr_type,
-            r_attr_length => $r_attr_length,
-            r_ma_dummy => $r_ma_dummy,
-            r_ma_family => $r_ma_family,
-            r_ma_port => $r_ma_port,
-            r_ma_address => inet_ntoa($r_ma_address)
+            message_type => $message_type,
+            message_length => $message_length,
+            transaction_id => $transaction_id,
+            attr_type => $attr_type,
+            attr_length => $attr_length,
+            ma_dummy => $ma_dummy,
+            ma_family => $ma_family,
+            ma_port => $ma_port,
+            ma_address => inet_ntoa($ma_address)
         };
-        #$self->stun_return($ret);
+        $self->response($ret);
         return $ret;
     }
 }

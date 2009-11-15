@@ -15,3 +15,7 @@ $r = $stun_client->run;
 
 print Dumper($r);
 
+print $stun_client->response->{ma_address},
+      ':',
+      $stun_client->response->{ma_port}, "\n";
+
