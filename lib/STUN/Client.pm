@@ -7,6 +7,7 @@ use Moose::Util::TypeConstraints;
 
 use Socket;
 use String::Random qw(random_regex);
+use Data::Validate::IP;
 
 our $VERSION = '0.02';
 
@@ -95,7 +96,7 @@ sub _select {
     return $nfound;
 }
 
-sub run () {
+sub get () {
     my ($self) = @_;
 
     socket(S, PF_INET, SOCK_DGRAM, getprotobyname($self->proto));
@@ -138,6 +139,9 @@ sub run () {
                 unpack("nna[16]" . "nn" . "bbna[4]",
                     $rmsg);
 
+        $ma_address = is_ipv4(inet_ntoa($ma_address)) ?
+            is_ipv4(inet_ntoa($ma_address)) : $ma_address;
+
         my $ret = { 
             message_type => $message_type,
             message_length => $message_length,
@@ -147,7 +151,7 @@ sub run () {
             ma_dummy => $ma_dummy,
             ma_family => $ma_family,
             ma_port => $ma_port,
-            ma_address => inet_ntoa($ma_address)
+            ma_address => $ma_address
         };
         $self->response($ret);
         return $ret;
@@ -171,7 +175,7 @@ STUN::Client - Session Traversal Utilities for NAT (STUN) client. (RFC 5389)
     $stun_client = STUN::Client->new;
 
     $stun_client->stun_server('stun.server.org');
-    $r = $stun_client->run;
+    $r = $stun_client->get;
 
     print Dumper($r);
 
@@ -237,7 +241,7 @@ Data to send in package.
 
 =head1 METHODS
 
-=head2 run
+=head2 get 
 
 Connect to a stun_server and receive the answer.
 

@@ -11,7 +11,7 @@ $stun_client = STUN::Client->new;
 
 $stun_client->stun_server('stun.xten.com');
 $stun_client->local_address('192.168.1.247');
-$r = $stun_client->run;
+$r = $stun_client->get;
 
 print Dumper($r);
 
