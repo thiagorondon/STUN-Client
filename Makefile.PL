@@ -13,6 +13,10 @@ requires 'Moose::Util::TypeConstraints';
 requires 'Socket';
 requires 'String::Random';
 
+requires 'Test::More';
+requires 'Test::Exception';
+requires 'Data::Validate::IP';
+
 auto_install;
 
 WriteAll;
