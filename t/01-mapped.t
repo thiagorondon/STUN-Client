@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use FindBin qw($Bin);
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use Test::Exception;
 
 use Data::Validate::IP;
@@ -27,7 +27,9 @@ lives_ok { $stun_client->get } 'Get mapped address!';
 my $ma_port = $stun_client->response->{ma_port};
 my $ma_address = $stun_client->response->{ma_address};
 
-ok ($ma_port >= 49152 && $ma_port <= 65535);
+ok ($ma_port >= 49152);
+ok ($ma_port <= 65535);
+
 ok (is_ipv4($ma_address));
 
 1;
