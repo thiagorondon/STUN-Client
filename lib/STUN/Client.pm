@@ -9,7 +9,7 @@ use Socket;
 use String::Random qw(random_regex);
 use Data::Validate::IP;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 has stun_server => (
     is => 'rw',
