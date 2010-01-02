@@ -258,6 +258,35 @@ Connect to a stun_server and receive the answer.
     * stunserver.org see their usage policy
     * stun.sipgate.net:10000 
 
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc XCAP::Client
+
+You can also look for information at:
+
+=over 4
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/XCAP-Client>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/XCAP-Client>
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=XCAP-Client>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/XCAP-Client>
+
+=back
+
+
 =head1 AUTHOR
 
 Thiago Rondon, <thiago@aware.com.br>
