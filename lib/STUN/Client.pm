@@ -262,7 +262,7 @@ Connect to a stun_server and receive the answer.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc XCAP::Client
+    perldoc STUN::Client
 
 You can also look for information at:
 
@@ -270,19 +270,19 @@ You can also look for information at:
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/XCAP-Client>
+L<http://annocpan.org/dist/STUN-Client>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/XCAP-Client>
+L<http://cpanratings.perl.org/d/STUN-Client>
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=XCAP-Client>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=STUN-Client>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/XCAP-Client>
+L<http://search.cpan.org/dist/STUN-Client>
 
 =back
 
