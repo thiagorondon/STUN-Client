@@ -6,10 +6,11 @@ use Moose;
 use Moose::Util::TypeConstraints;
 
 use Socket;
-use String::Random qw(random_regex);
 use Data::Validate::IP;
 
-our $VERSION = '0.03';
+use STUN::RFC_5389;
+
+our $VERSION = '0.04';
 
 has stun_server => (
     is => 'rw',
@@ -39,13 +40,6 @@ has proto => (
     default => 'udp',
 );
 
-has 'transaction_id' => (
-    is => 'ro',
-    isa => 'Str',
-    lazy => 1,
-    default => random_regex('[0-9A-F]{16}')
-);
-
 has 'retries' => (
     is => 'rw',
     isa => 'Int',
@@ -56,28 +50,6 @@ has 'timeout' => (
     is => 'rw',
     isa => 'Int',
     default => 2
-);
-
-has 'method' => (
-    is => 'rw',
-    isa => 'Str',
-    default => '0001'
-);
-
-has 'data' => (
-    is => 'rw',
-    isa => 'Str',
-    default => ''
-);
-
-has 'data_len' => (
-    is => 'ro',
-    isa => 'Str',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        sprintf("%04d", length($self->data));
-    }
 );
 
 has 'response' => (
@@ -111,11 +83,7 @@ sub get () {
     my $iaddr = gethostbyname($self->stun_server);
     my $sin = sockaddr_in($self->port, $iaddr);
 
-    my $msg = pack('nna[16]',
-                $self->method, 
-                $self->data_len,
-                $self->transaction_id
-            );
+    my $msg = STUN::RFC_5389->Client( { request => 1 } );
 
     my $try = 0;
 
@@ -132,29 +100,23 @@ sub get () {
 
         next if !defined $r;
 
-        my ($message_type, $message_length, $transaction_id,
-            $attr_type, $attr_length,
-            $ma_dummy, $ma_family,
-            $ma_port, $ma_address) =
-                unpack("nna[16]" . "nn" . "bbna[4]",
-                    $rmsg);
+        my $answer = STUN::RFC_5389->Client( $rmsg );
 
-        $ma_address = is_ipv4(inet_ntoa($ma_address)) ?
-            is_ipv4(inet_ntoa($ma_address)) : $ma_address;
-
+        my $ma = $answer->{attributes}{'0020'} ? '0020' : '0001';
         my $ret = { 
-            message_type => $message_type,
-            message_length => $message_length,
-            transaction_id => $transaction_id,
-            attr_type => $attr_type,
-            attr_length => $attr_length,
-            ma_dummy => $ma_dummy,
-            ma_family => $ma_family,
-            ma_port => $ma_port,
-            ma_address => $ma_address
+            message_type => $answer->{message_type},
+            message_length => $answer->{message_length},
+            transaction_id => $answer->{magic_cookie} . $answer->{transaction_id},
+            attr_type => $ma,
+            attr_length => 8,
+            ma_dummy => '00',
+            ma_family => $answer->{attributes}{$ma}{family},
+            ma_port => $answer->{attributes}{$ma}{port},
+            ma_address => $answer->{attributes}{$ma}{address}
         };
         $self->response($ret);
-        return $ret;
+
+        return ( $ret, $answer );
     }
 }
 
@@ -175,14 +137,16 @@ STUN::Client - Session Traversal Utilities for NAT (STUN) client. (RFC 5389)
     $stun_client = STUN::Client->new;
 
     $stun_client->stun_server('stun.server.org');
-    $r = $stun_client->get;
 
-    print Dumper($r);
+    ($r_old, $r_new) = $stun_client->get;
+
+    print Dumper($r_old);
+    print Dumper($r_new);
 
 =head1 DESCRIPTION
 
 Session Traversal Utilities for NAT (STUN) is a protocol that serves as a tool for other protocols in dealing with Network Address Translator (NAT) traversal. It can be used by an endpoint to determine the IP address and port allocated to it by a NAT. It can also be used to check connectivity between two endpoints, and as a keep-alive protocol to maintain NAT bindings. STUN works with many existing NATs, and does not require any special behavior from them.
-                
+
 STUN is not a NAT traversal solution by itself. Rather, it is a tool to be used in the context of a NAT traversal solution.
 
 =head1 ATTRIBUTES
@@ -243,7 +207,10 @@ Data to send in package.
 
 =head2 get 
 
-Connect to a stun_server and receive the answer.
+Connect to a stun_server and receive the answer. The first argument returned
+is a hash reference in the format retuned by the versions
+previous to 0.04. The second argument is a hash reference as returned
+by L<STUN::RFC_5389>.
 
 =head1 STUN Servers
 
@@ -258,34 +225,14 @@ Connect to a stun_server and receive the answer.
     * stunserver.org see their usage policy
     * stun.sipgate.net:10000 
 
-=head1 SUPPORT
 
-You can find documentation for this module with the perldoc command.
+=head1 SEE ALSO
 
-    perldoc STUN::Client
+L<STUN::RFC_5389>
 
-You can also look for information at:
+=head1 CONTRIBUTORS
 
-=over 4
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/STUN-Client>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/STUN-Client>
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=STUN-Client>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/STUN-Client>
-
-=back
-
+Detlef Pilzecker
 
 =head1 AUTHOR
 
@@ -296,5 +243,4 @@ http://www.aware.com.br/
 =head1 LICENSE
 
 Perl license.
-
 
